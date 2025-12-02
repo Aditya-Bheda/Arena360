@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Bookings – Arena360</title>
+
+<style>
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #121212;
+        margin: 0;
+        padding: 20px;
+        color: #fff;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 26px;
+        margin-bottom: 25px;
+        font-weight: 700;
+        color: #E0E306;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Booking Card */
+    .booking-card {
+        background: #1d1d1d;
+        padding: 18px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+        display: flex;
+        gap: 15px;
+        border: 1px solid #2a2a2a;
+        transform: translateY(0);
+        transition: all 0.25s ease;
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+
+    .booking-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 25px rgba(224,227,6,0.25);
+        border-color: #E0E306;
+    }
+
+    /* Fade In Animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .booking-card img {
+        width: 120px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid #E0E306;
+    }
+
+    .info {
+        flex: 1;
+    }
+
+    .club-name {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #E0E306;
+    }
+
+    .detail {
+        font-size: 14px;
+        margin-bottom: 4px;
+        color: #ddd;
+    }
+
+    .no-booking {
+        text-align: center;
+        margin-top: 40px;
+        color: #aaa;
+        font-size: 16px;
+    }
+
+</style>
+</head>
+
+<body>
+
+<h2>My Bookings</h2>
+
+{% for b in bookings %}
+<div class="booking-card">
+
+    <!-- Club Image -->
+    {% if b.club.club_image %}
+        <img src="{{ b.club.club_image.url }}" alt="">
+    {% else %}
+        <img src="{% static 'images/default-club.jpg' %}" alt="">
+    {% endif %}
+
+    <div class="info">
+        <div class="club-name">{{ b.club.club_name }}</div>
+
+        <div class="detail">🏅 Sport: <strong>{{ b.sport.name }}</strong></div>
+        <div class="detail">📍 Location: {{ b.club.location }}</div>
+        <div class="detail">📅 Date: {{ b.date }}</div>
+        <div class="detail">⏰ Time: {{ b.start_time }} - {{ b.end_time }}</div>
+        <div class="detail">👤 Name: {{ b.name }} | 📞 {{ b.phone }}</div>
+        <div class="detail">💰 ₹{{ b.club.price_per_hour }}/hr</div>
+    </div>
+</div>
+{% empty %}
+<p class="no-booking">No bookings found.</p>
+{% endfor %}
+
+</body>
+</html>

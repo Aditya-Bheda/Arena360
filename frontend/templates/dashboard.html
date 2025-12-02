@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena360</title>
+
+    <!-- Correct CSS Path -->
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@700&family=Roboto:wght@500&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">Arena360</div>
+    <div class="nav-right">
+        <button class="btn-partner" onclick="window.location.href='/partner-registration/'">Become a Partner</button>
+        <button class="profile-icon" onclick="window.location.href='/login/'">👤</button>
+        <!-- <div class="profile-icon" onclick="profileClick()">👤</div> -->
+    </div>
+</nav>
+
+<section class="hero" id="home">
+    <div class="hero-content">
+        <h1>Find the Best Sports Clubs</h1>
+        <p>Your all-in-one solution for court booking and sports management</p>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="window.location.href='/login/'">Get Started</button>
+            <button class="btn-secondary">Explore Clubs</button>
+        </div>
+    </div>
+</section>
+
+<!-- Cards Section -->
+<section class="features">
+    <h2>Choose Your Role</h2>
+
+    <div class="feature-cards">
+
+        <div class="card">
+            <img src="{% static 'images/1.jpg' %}" alt="For Councils">
+            <h3>For Councils</h3>
+        </div>
+
+        <div class="card">
+            <img src="{% static 'images/2.jpeg' %}" alt="For Clubs">
+            <h3>For Clubs</h3>
+        </div>
+
+        <div class="card">
+            <img src="{% static 'images/3.png' %}" alt="For Schools">
+            <h3>For Schools</h3>
+        </div>
+
+        <div class="card">
+            <img src="{% static 'images/4.jpg' %}" alt="For Sporting Bodies">
+            <h3>For Sporting Bodies</h3>
+        </div>
+
+    </div>
+</section>
+
+<section class="why-choose">
+    <h2>Why Choose <span class="highlight">Arena360?</span></h2>
+
+    <div class="choose-cards">
+        <div class="choose-card">Expert Trainers</div>
+        <div class="choose-card">Personalized Skill Development</div>
+        <div class="choose-card">Performance Tracking</div>
+        <div class="choose-card">Career Guidance</div>
+        <div class="choose-card">Practical-Based Learning</div>
+    </div>
+</section>
+
+<section class="about">
+    <h2>Why Arena360?</h2>
+    <p>Arena360 brings innovation in sports booking by allowing users to find nearby clubs, check court availability, and book instantly.</p>
+</section>
+
+<script>
+function redirectToLogin() {
+    window.location.href = "/login/";
+}
+
+function redirectToOwnerRegistrstion() {
+    window.location.href = "/partner-registration/";
+}
+
+function profileClick() {
+    if (isAuthenticated) {
+        document.getElementById("sidebar").classList.add("active");
+    } else {
+        window.location.href = "/login/";
+    }
+}
+
+</script>
+
+</body>
+</html>

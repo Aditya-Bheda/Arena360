@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Slot - {{ club.club_name }}</title>
+
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; border-radius: 8px; max-width: 850px; margin: auto; }
+
+        .slots { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+        .slot { padding: 12px; background: #fff; border-radius: 8px; width: 140px; text-align: center; border: 1px solid #ddd; }
+        .slot button { padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+
+        .available { background: #28a745; color: white; border: none; }
+        .booked { background: #ccc; color: #666; border: none; cursor: not-allowed; }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Booking – {{ club.club_name }}</h2>
+
+    <form method="GET" class="filters">
+        <label>Sport:</label>
+        <select name="sport" required>
+            <option value="">Select</option>
+            {% for sp in sports %}
+                <option value="{{ sp.id }}" {% if sp.id|stringformat:"s" == selected_sport_id %}selected{% endif %}>
+                    {{ sp.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Date:</label>
+        <input type="date" name="date" value="{{ slot_date }}" required>
+
+        <button type="submit">Show Slots</button>
+    </form>
+
+    <div class="slots">
+        {% for s in availability %}
+            <div class="slot">
+                <strong>{{ s.start }} - {{ s.end }}</strong><br>
+
+                {% if s.available %}
+                    <a href="/club/{{ club.id }}/book/submit/?sport={{ selected_sport_id }}&date={{ slot_date }}&start={{ s.start }}&end={{ s.end }}">
+                      <button class="available">Book</button>
+                    </a>
+
+                {% else %}
+                    <button class="booked">Booked</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>

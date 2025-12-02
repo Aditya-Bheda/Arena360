@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner Dashboard | Arena360</title>
+
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+
+    <style>
+        .partner-container {
+            padding: 40px 8%;
+        }
+        .partner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .partner-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+        }
+        .add-btn {
+            background: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .club-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .club-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .club-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .club-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 12px;
+        }
+        .club-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 12px;
+        }
+        .btn-edit {
+            flex: 1;
+            padding: 8px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .status {
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .approved { color: green; }
+        .pending { color: orange; }
+    </style>
+</head>
+
+<body>
+
+<div class="partner-container">
+
+    <div class="partner-header">
+        <h2>Your Clubs</h2>
+        <button class="add-btn" onclick="window.location.href='/partner-registration/'">+ Add New Club</button>
+    </div>
+
+    <div class="club-grid">
+
+        {% for club in clubs %}
+        <div class="club-card">
+
+            {% if club.club_image %}
+                <img src="{{ club.club_image.url }}" alt="Club Image">
+            {% else %}
+                <img src="{% static 'images/placeholder.png' %}">
+            {% endif %}
+
+            <h3>{{ club.club_name }}</h3>
+            <p>📍 {{ club.location }}</p>
+            <p>💰 ₹{{ club.price_per_hour }}/hour</p>
+
+            <p class="status {% if club.approved %}approved{% else %}pending{% endif %}">
+                {% if club.approved %}✔ Approved{% else %}⏳ Pending Approval{% endif %}
+            </p>
+
+            <div class="club-actions">
+                <button class="btn-edit" onclick="window.location.href='/edit-club/{{ club.id }}/'">Edit</button>
+            </div>
+
+        </div>
+        {% empty %}
+        <p>You have not added any clubs yet.</p>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

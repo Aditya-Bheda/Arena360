@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book Slot</title>
+
+<style>
+.container { width: 90%; margin: 20px auto; }
+
+.section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.sport-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+}
+.sport-btn.active {
+    background: #ffeb3b;
+    border-color: #000;
+}
+
+.slot {
+    display: inline-block;
+    padding: 12px;
+    width: 120px;
+    background: white;
+    margin: 5px;
+    border-radius: 10px;
+    border: 2px solid black;
+    text-align: center;
+    font-weight: 600;
+}
+.slot.booked {
+    background: #ccc;
+    color: #666;
+    border-color: #888;
+    cursor: not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Book Your Slot</h1>
+
+<!-- Sport Selection -->
+<div class="section">
+<h2>Select Sport</h2>
+{% for s in sports %}
+<a href="?sport={{s.id}}&date={{selected_date}}" class="sport-btn {% if selected_sport_id == s.id|stringformat:'s' %}active{% endif %}">
+    {{ s.name }}
+</a>
+{% endfor %}
+</div>
+
+<!-- Date Picker -->
+<div class="section">
+<h2>Select Date</h2>
+<input type="date" value="{{selected_date}}" onchange="window.location='?sport={{selected_sport_id}}&date='+this.value">
+</div>
+
+<!-- Slots -->
+<div class="section">
+{% if slots %}
+<h2>Select Time Slot</h2>
+
+{% for s in slots %}
+    {% if s.booked %}
+        <div class="slot booked">{{s.start}} - {{s.end}}</div>
+    {% else %}
+        <a href="{% url 'submit_booking' club.id %}?sport={{ sport.id }}&date={{ selected_date }}&start={{ s.start }}&end={{ s.end }}">
+            <div class="slot">{{s.start}} - {{s.end}}</div>
+        </a>
+    {% endif %}
+{% endfor %}
+
+{% else %}
+<p>Please select a sport and date.</p>
+{% endif %}
+</div>
+
+</div>
+
+</body>
+</html>

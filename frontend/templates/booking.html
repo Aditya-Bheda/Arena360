@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book {{ club.club_name }}</title>
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+}
+
+.container {
+    padding: 18px;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.date-box, .time-box {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.slot {
+    padding: 10px 18px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 8px;
+    cursor: pointer;
+    background: #fff;
+}
+
+.slot.booked {
+    background: #ffcccc;
+    color: #a00;
+    border-color: #a00;
+    cursor: not-allowed;
+}
+
+.slot.selected {
+    background: #ffd700;
+}
+
+.book-btn {
+    display: block;
+    width: 80%;
+    margin: auto;
+    padding: 15px 0;
+    text-align: center;
+    background: #000;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 18px;
+    text-decoration: none;
+    margin-top: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Book Your Slot</h2>
+
+    <!-- Date selector -->
+    <form method="GET">
+        <div class="date-box">
+            <h3>Select Date</h3>
+            <input type="date" name="date" value="{{ selected_date }}" onchange="this.form.submit()">
+        </div>
+    </form>
+
+    {% if selected_date %}
+    <form method="POST">
+        {% csrf_token %}
+
+        <input type="hidden" name="date" value="{{ selected_date }}">
+        <input type="hidden" id="selectedTime" name="time">
+
+        <!-- Time Slots -->
+        <div class="time-box">
+            <h3>Available Time Slots</h3>
+
+            {% for slot in time_slots %}
+                {% with slot_str=slot|time:"H:i" %}
+                    {% if slot_str in booked_slots %}
+                        <span class="slot booked">{{ slot_str }}</span>
+                    {% else %}
+                        <span class="slot" onclick="selectSlot('{{ slot_str }}', this)">{{ slot_str }}</span>
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+
+        <button class="book-btn" type="submit">Confirm Booking</button>
+
+    </form>
+    {% else %}
+        <p style="text-align:center;color:#666;">Please select a date</p>
+    {% endif %}
+
+</div>
+
+<script>
+function selectSlot(time, element) {
+    if (element.classList.contains("booked")) return;
+
+    document.querySelectorAll(".slot").forEach(s => s.classList.remove("selected"));
+    element.classList.add("selected");
+
+    document.getElementById("selectedTime").value = time;
+}
+</script>
+
+</body>
+</html>

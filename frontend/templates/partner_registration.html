@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Partner Registration — Arena360</title>
+
+  <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+  <!-- reuse global style -->
+  <style>
+    /* If you prefer a small page-specific CSS, paste here. Otherwise rely on style.css */
+    .partner-wrap{
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 28px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    }
+    .partner-header{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .partner-header h1{ font-family:'Montserrat',sans-serif; color:var(--black); margin:0; }
+    .partner-form{ margin-top:18px; display:grid; gap:14px; grid-template-columns: 1fr 1fr; }
+    .partner-form .full{ grid-column: 1 / -1; }
+    label{ font-weight:600; margin-bottom:6px; display:block; color:var(--black); }
+    input[type="text"], input[type="number"], input[type="time"], input[type="file"], textarea, select {
+      width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;
+    }
+    .submit-row{ display:flex; gap:12px; justify-content:flex-end; margin-top:12px; }
+    .btn-submit{ background:var(--primary-color); color:#000; padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:700; }
+    .btn-cancel{ background:#f2f2f2; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; }
+    .sports-list{ display:flex; gap:12px; flex-wrap:wrap; }
+    .sports-list label{ background:#fff; padding:8px 10px; border-radius:8px; border:1px solid #eee; cursor:pointer; }
+    .preview-img{ width:120px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #eee; }
+    @media (max-width:800px){
+      .partner-form { grid-template-columns: 1fr; }
+      .submit-row{ justify-content:center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="partner-wrap">
+    <div class="partner-header">
+      <h1>Partner Registration</h1>
+      <div><small>Owners: submit your club & wait for admin approval</small></div>
+    </div>
+
+    <form class="partner-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <!-- Left column -->
+      <div>
+        <label for="id_club_name">Club Name</label>
+        {{ form.club_name }}
+
+        <label for="id_location">Location</label>
+        {{ form.location }}
+
+        <label for="id_available_courts">Available Courts</label>
+        {{ form.available_courts }}
+
+        <label for="id_price_per_hour">Price per hour (₹)</label>
+        {{ form.price_per_hour }}
+      </div>
+
+      <!-- Right column -->
+      <div>
+        <label for="id_contact_number">Contact Number</label>
+        {{ form.contact_number }}
+
+        <label for="id_open_time">Open Time</label>
+        {{ form.open_time }}
+
+        <label for="id_close_time">Close Time</label>
+        {{ form.close_time }}
+
+        <label for="id_club_image">Club Image</label>
+        {{ form.club_image }}
+        <div style="margin-top:8px;">
+          <img id="preview" class="preview-img" src="{% static 'images/1.jpg' %}" alt="preview"/>
+        </div>
+      </div>
+
+      <div class="full">
+        <label>Available Sports</label>
+        <div class="sports-list">
+          {{ form.sports }} <!-- renders checkbox list -->
+        </div>
+      </div>
+
+      <div class="full submit-row">
+        <a href="/" class="btn-cancel">Cancel</a>
+        <button type="submit" class="btn-submit">Submit Club</button>
+      </div>
+    </form>
+  </div>
+
+<script>
+  // simple preview for uploaded image
+  const input = document.querySelector('input[type="file"]');
+  const preview = document.getElementById('preview');
+  if(input){
+    input.addEventListener('change', function(e){
+      const file = e.target.files[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+    });
+  }
+</script>
+</body>
+</html>
