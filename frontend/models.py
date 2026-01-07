@@ -5,12 +5,23 @@ from django.dispatch import receiver
 from datetime import datetime, timedelta, time
 from django.utils import timezone
 
+# class UserProfile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+#     phone = models.CharField(max_length=30, blank=True, null=True)
+
+#     def __str__(self):
+#         return f"{self.user.username} profile"
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     phone = models.CharField(max_length=30, blank=True, null=True)
+    
+    # NEW FIELD
+    is_partner = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} profile"
+
+
 
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
@@ -93,6 +104,13 @@ class Favourite(models.Model):
 #         return f"{self.club} - {self.sport} - {self.date} {self.start_time}"
 
 class Booking(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     club = models.ForeignKey(SportsClub, on_delete=models.CASCADE)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE)
@@ -104,7 +122,24 @@ class Booking(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
 
+    # Payment fields
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True, null=True)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.club.club_name} | {self.sport.name} | {self.date}"
+    
+    def calculate_amount(self):
+        """Calculate booking amount based on duration and price per hour"""
+        start_dt = datetime.combine(self.date, self.start_time)
+        end_dt = datetime.combine(self.date, self.end_time)
+        if end_dt < start_dt:
+            end_dt += timedelta(days=1)
+        duration_hours = (end_dt - start_dt).total_seconds() / 3600
+        return float(self.club.price_per_hour) * duration_hours
+

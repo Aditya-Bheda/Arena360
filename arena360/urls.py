@@ -71,6 +71,7 @@ urlpatterns = [
     path('partner-registration/', views.partner_register, name='partner-register'),  # add-club form
     path('partner-dashboard/', views.partner_dashboard, name='partner-dashboard'),
     path('partner-clubs/', views.partner_clubs, name='partner-clubs'),               # list of partner's clubs (simple)
+    path('partner-bookings/', views.partner_bookings, name='partner-bookings'),      # partner's bookings
     path('add-club/', views.add_club, name='add-club'),                              # optional alias for partner register/add
     path('edit-club/<int:club_id>/', views.edit_club, name='edit-club'),
 
@@ -97,6 +98,8 @@ urlpatterns = [
 
     path("help/", views.help_support, name="help-support"),
 
+    # Payment
+    path("payment/callback/", views.payment_callback, name="payment-callback"),
 
     # (Optional) helper / API endpoints can be added later (e.g. AJAX)
 ]

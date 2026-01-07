@@ -9,51 +9,74 @@
     <link rel="stylesheet" href="{% static 'css/style2.css' %}">
     
     <style>
+        body {
+            background: #000;
+            color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
         .edit-container {
-            width: 60%;
+            max-width: 900px;
             margin: 50px auto;
-            background: white;
+            background: #1a1a1a;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            font-family: 'Open Sans', sans-serif;
+            box-shadow: 0 6px 25px rgba(224, 227, 6, 0.2);
+            border: 2px solid #E0E306;
         }
 
         .edit-container h2 {
             font-family: 'Montserrat', sans-serif;
             margin-bottom: 20px;
             font-size: 28px;
+            color: #E0E306;
         }
 
         label {
             font-weight: 600;
             margin-top: 12px;
             display: block;
+            color: #E0E306;
         }
 
         input, select, textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
+            border: 2px solid #444;
             border-radius: 8px;
             margin-top: 6px;
             font-size: 15px;
+            background: #2a2a2a;
+            color: #f0f0f0;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #E0E306;
+            box-shadow: 0 0 0 4px rgba(224, 227, 6, 0.2);
+            background: #333;
         }
 
         .btn-save {
-            background: black;
-            color: white;
+            background: #E0E306;
+            color: #000;
             padding: 12px 20px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             margin-top: 20px;
             font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            transition: all 0.3s ease;
         }
 
         .btn-save:hover {
-            background: #E0E306;
-            color: black;
+            background: #C9D000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(224, 227, 6, 0.4);
         }
 
         .current-image {
@@ -62,6 +85,63 @@
             object-fit: cover;
             border-radius: 12px;
             margin-bottom: 20px;
+            border: 2px solid #444;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .sports-list {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .sports-list label {
+            background: #2a2a2a;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            cursor: pointer;
+            color: #f0f0f0;
+            font-weight: 500;
+            margin-top: 0;
+        }
+
+        .sports-list input[type="checkbox"] {
+            accent-color: #E0E306;
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .field-error {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+
+        input.invalid, select.invalid {
+            border-color: #ff6b6b !important;
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+        }
+
+        @media (max-width: 800px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -76,14 +156,168 @@
         <img src="{{ club.club_image.url }}" class="current-image">
     {% endif %}
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" id="editClubForm">
         {% csrf_token %}
 
-        {{ form.as_p }}
+        <div class="form-grid">
+            <div>
+                <label for="id_club_name">Club Name <span style="color:red;">*</span></label>
+                {{ form.club_name }}
+                <div class="field-error" id="club_name-error" style="display: none;">Please enter club name</div>
+            </div>
+
+            <div>
+                <label for="id_location">Location <span style="color:red;">*</span></label>
+                {{ form.location }}
+                <div class="field-error" id="location-error" style="display: none;">Please enter location</div>
+            </div>
+
+            <div>
+                <label for="id_available_courts">Available Courts <span style="color:red;">*</span></label>
+                {{ form.available_courts }}
+                <div class="field-error" id="available_courts-error" style="display: none;">Please enter number of courts (minimum 1)</div>
+            </div>
+
+            <div>
+                <label for="id_price_per_hour">Price per hour (₹) <span style="color:red;">*</span></label>
+                {{ form.price_per_hour }}
+                <div class="field-error" id="price_per_hour-error" style="display: none;">Please enter price (minimum ₹1)</div>
+            </div>
+
+            <div>
+                <label for="id_contact_number">Contact Number <span style="color:red;">*</span></label>
+                {{ form.contact_number }}
+                <div class="field-error" id="contact_number-error" style="display: none;">Please enter a valid 10-digit phone number</div>
+            </div>
+
+            <div>
+                <label for="id_open_time">Open Time <span style="color:red;">*</span></label>
+                {{ form.open_time }}
+                <div class="field-error" id="open_time-error" style="display: none;">Please select open time</div>
+            </div>
+
+            <div>
+                <label for="id_close_time">Close Time <span style="color:red;">*</span></label>
+                {{ form.close_time }}
+                <div class="field-error" id="close_time-error" style="display: none;">Please select close time (must be after open time)</div>
+            </div>
+
+            <div>
+                <label for="id_club_image">Club Image</label>
+                {{ form.club_image }}
+            </div>
+
+            <div class="full">
+                <label>Available Sports <span style="color:red;">*</span></label>
+                <div class="sports-list">
+                    {{ form.sports }}
+                </div>
+                <div class="field-error" id="sports-error" style="display: none;">Please select at least one sport</div>
+            </div>
+        </div>
 
         <button class="btn-save" type="submit">Save Changes</button>
     </form>
 </div>
+
+<script>
+    // Form validation
+    document.getElementById('editClubForm').addEventListener('submit', function(e) {
+        var isValid = true;
+        var phonePattern = /^\d{10}$/;
+        
+        // Reset all errors
+        document.querySelectorAll('.field-error').forEach(function(err) {
+            err.classList.remove('show');
+        });
+        document.querySelectorAll('input, select').forEach(function(field) {
+            field.classList.remove('invalid');
+        });
+        
+        // Validate Club Name
+        var clubName = document.getElementById('id_club_name');
+        if (!clubName.value.trim()) {
+            clubName.classList.add('invalid');
+            document.getElementById('club_name-error').classList.add('show');
+            isValid = false;
+        }
+        
+        // Validate Location
+        var location = document.getElementById('id_location');
+        if (!location.value.trim()) {
+            location.classList.add('invalid');
+            document.getElementById('location-error').classList.add('show');
+            isValid = false;
+        }
+        
+        // Validate Available Courts
+        var courts = document.getElementById('id_available_courts');
+        if (!courts.value || parseInt(courts.value) < 1) {
+            courts.classList.add('invalid');
+            document.getElementById('available_courts-error').classList.add('show');
+            isValid = false;
+        }
+        
+        // Validate Price
+        var price = document.getElementById('id_price_per_hour');
+        if (!price.value || parseFloat(price.value) < 1) {
+            price.classList.add('invalid');
+            document.getElementById('price_per_hour-error').classList.add('show');
+            isValid = false;
+        }
+        
+        // Validate Contact Number
+        var contact = document.getElementById('id_contact_number');
+        if (!contact.value.trim()) {
+            contact.classList.add('invalid');
+            document.getElementById('contact_number-error').classList.add('show');
+            isValid = false;
+        } else if (!phonePattern.test(contact.value.replace(/\D/g, ''))) {
+            contact.classList.add('invalid');
+            document.getElementById('contact_number-error').classList.add('show');
+            isValid = false;
+        }
+        
+        // Validate Open Time
+        var openTime = document.getElementById('id_open_time');
+        if (!openTime.value) {
+            openTime.classList.add('invalid');
+            document.getElementById('open_time-error').classList.add('show');
+            isValid = false;
+        }
+        
+        // Validate Close Time
+        var closeTime = document.getElementById('id_close_time');
+        if (!closeTime.value) {
+            closeTime.classList.add('invalid');
+            document.getElementById('close_time-error').classList.add('show');
+            isValid = false;
+        } else if (openTime.value && closeTime.value && openTime.value >= closeTime.value) {
+            closeTime.classList.add('invalid');
+            document.getElementById('close_time-error').classList.add('show');
+            isValid = false;
+        }
+        
+        // Validate Sports
+        var sports = document.querySelectorAll('input[name="sports"]:checked');
+        if (sports.length === 0) {
+            document.getElementById('sports-error').classList.add('show');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+    
+    // Real-time validation
+    document.getElementById('id_contact_number').addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10);
+        }
+    });
+</script>
 
 </body>
 </html>

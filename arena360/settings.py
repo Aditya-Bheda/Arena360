@@ -143,5 +143,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # settings.py (use env vars in production)
-RAZORPAY_KEY_ID = "rzp_test_xxx"
-RAZORPAY_KEY_SECRET = "secret_xxx"
+RAZORPAY_KEY_ID = "rzp_test_RrS8yTdlTnHNvt"
+RAZORPAY_KEY_SECRET = "J2yEKmfX5f5IvNo0oNuJCAVs"
+
+# Message Central API Settings
+MESSAGE_CENTRAL_CUSTOMER_ID = "C-21FD44C0018244E"
+MESSAGE_CENTRAL_KEY = "Aditya@123"
+MESSAGE_CENTRAL_SENDER_ID = "ARENA360"
+MESSAGE_CENTRAL_COUNTRY_CODE = "91"  # India
+MESSAGE_CENTRAL_EMAIL = "arena360@gmail.com"

@@ -22,7 +22,7 @@
         body {
             margin: 0;
             font-family: 'Open Sans', sans-serif;
-            background: var(--light-bg);
+            background: #000;
         }
 
         /* ===== Navbar ===== */
@@ -32,7 +32,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 30px;
-            background: var(--primary-color);
+            background: #E0E306;
+            border-bottom: 2px solid #000;
         }
 
         .navbar h1 {
@@ -40,15 +41,49 @@
             font-size: 22px;
             font-weight: bold;
             margin: 0;
+            color: #000;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .navbar h1 .hover-text {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        
+        .navbar h1:hover .hover-text {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .profile-icon {
             cursor: pointer;
-            background: var(--black);
-            color: white;
+            background: #000;
+            color: #E0E306;
             padding: 10px;
             border-radius: 50%;
             font-size: 16px;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .profile-icon:hover {
+            background: #1a1a1a;
+            transform: scale(1.1);
         }
 
         /* ===== Profile Dropdown ===== */
@@ -56,22 +91,29 @@
             position: absolute;
             right: 30px;
             top: 75px;
-            background: white;
+            background: #1a1a1a;
             border-radius: 8px;
             width: 230px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 12px rgba(224, 227, 6, 0.3);
+            border: 2px solid #E0E306;
             display: none;
         }
 
         .profile-item {
             padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #333;
             font-size: 14px;
             cursor: pointer;
+            color: #fff;
+        }
+        
+        .profile-item strong {
+            color: #E0E306;
         }
 
         .profile-item:hover {
-            background: var(--primary-color);
+            background: #E0E306;
+            color: #000;
         }
 
         .profile-item:last-child {
@@ -80,50 +122,193 @@
 
         /* ===== Dashboard ===== */
         .dashboard {
-            padding: 30px;
+            padding: 40px 30px;
+            animation: fadeIn 0.8s ease;
         }
 
         .dashboard h2 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #E0E306;
+            text-align: center;
+            animation: slideDown 0.6s ease;
+            letter-spacing: -0.5px;
+        }
+
+        .dashboard-subtitle {
+            text-align: center;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 35px;
+            animation: fadeIn 1s ease 0.2s both;
+            font-weight: 400;
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* ===== Club Cards ===== */
         .club-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
         .club-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #1a1a1a;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(224, 227, 6, 0.1);
+            border: 2px solid #333;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .club-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #E0E306;
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .club-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(224, 227, 6, 0.3);
+            border-color: #E0E306;
+        }
+
+        .club-card:hover::before {
+            transform: scaleX(1);
         }
 
         .club-img {
             width: 100%;
-            height: 160px;
+            height: 180px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            transition: transform 0.4s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .club-card:hover .club-img {
+            transform: scale(1.05);
+        }
+
+        .club-card h3 {
+            font-size: 20px;
+            font-weight: 600;
             margin-bottom: 12px;
+            color: #E0E306;
+            transition: color 0.3s ease;
+        }
+
+        .club-card:hover h3 {
+            color: #C9D000;
+        }
+
+        .club-card p {
+            margin: 8px 0;
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .btn-view {
-            padding: 8px 15px;
-            background: var(--black);
-            color: white;
+            padding: 12px 24px;
+            background: #E0E306;
+            color: #000;
             border: none;
-            border-radius: 4px;
-            margin-top: 10px;
+            border-radius: 8px;
+            margin-top: 16px;
             cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-view::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
 
         .btn-view:hover {
-            background: var(--primary-color);
-            color: black;
+            background: #C9D000;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(224, 227, 6, 0.6);
+        }
+
+        .btn-view:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-view span {
+            position: relative;
+            z-index: 1;
         }
 
         /* ===== Modal ===== */
@@ -203,7 +388,10 @@
 
     <!-- ===== Navbar ===== -->
     <div class="navbar">
-        <h1>Arena360</h1>
+        <h1>
+            Arena360
+            <span class="hover-text">Book • Play • Repeat</span>
+        </h1>
         <!-- <div class="profile-icon" onclick="toggleProfile()">👤</div>/ -->
         <div class="profile-icon" onclick="accountClick()" title="Account">👤</div>
     </div>
@@ -214,6 +402,14 @@
 
     <!-- Profile -->
     <a class="menu-item" href="/edit-profile/">
+      <form method="POST">
+    {% csrf_token %}
+    <label>
+        <input type="checkbox" name="is_partner" {% if request.user.profile.is_partner %}checked{% endif %}> Become a Partner
+    </label>
+    <button>Update</button>
+</form>
+
         🔧 Profile
     </a>
 
@@ -281,11 +477,12 @@
 
     <!-- ===== Dashboard ===== -->
     <div class="dashboard">
-        <h2>🔥 Available Clubs</h2>
+        <h2>Premium Sports Venues</h2>
+        <p class="dashboard-subtitle">Discover and book your perfect court in minutes</p>
 
         <div class="club-list">
             {% for club in clubs %}
-            <div class="club-card">
+            <div class="club-card" data-card-index="{{ forloop.counter0 }}">
 
                 {% if club.club_image %}
                     <img src="{{ club.club_image.url }}" class="club-img">
@@ -295,14 +492,28 @@
 
                 <h3>{{ club.club_name }}</h3>
 
-                <p>🎯 Sports:
-                    {% for s in club.available_sports.all %}
-                        {{ s.name }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
+                <p>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E0E306" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 5px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Timing: {{ club.open_time|time:"g:i A" }} - {{ club.close_time|time:"g:i A" }}
                 </p>
 
-                <p>💰 ₹{{ club.price_per_hour }}/hour</p>
-                <p>📍 {{ club.location }}</p>
+                <p>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E0E306" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 5px;">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    ₹{{ club.price_per_hour }} / hour
+                </p>
+                <p>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E0E306" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 5px;">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#E0E306"></path>
+                        <circle cx="12" cy="9" r="2.5" fill="#000"></circle>
+                    </svg>
+                    Location: {{ club.location }}
+                </p>
 
 <!-- <button class="btn-view"
         onclick="openDetails(
@@ -316,7 +527,7 @@
 
     <button class="btn-view"
         onclick="window.location.href='/club/{{ club.id }}/'">
-    🔍 View Details
+    <span>🔍 View Details</span>
     </button>
 
 
@@ -399,6 +610,36 @@ function saveProfile() {
     window.scrollTo(0,0);
 }
 
+   </script>
+   
+   <script>
+       // Stagger animation for club cards
+       document.addEventListener('DOMContentLoaded', function() {
+           var cards = document.querySelectorAll('.club-card[data-card-index]');
+           cards.forEach(function(card) {
+               var index = parseInt(card.getAttribute('data-card-index'));
+               var delay = (index + 1) * 0.1;
+               card.style.animationDelay = delay + 's';
+           });
+           
+           // Remove login page from history stack and prevent back navigation to login
+           if (window.history && window.history.replaceState) {
+               // Replace any login page entry with current dashboard
+               if (document.referrer && document.referrer.includes('login')) {
+                   window.history.replaceState(null, '', window.location.href);
+               }
+               
+               // Prevent back navigation to login page
+               window.addEventListener('popstate', function(event) {
+                   if (document.referrer && document.referrer.includes('login')) {
+                       window.history.pushState(null, '', window.location.href);
+                   }
+               });
+               
+               // Push current state to prevent going back to login
+               window.history.pushState({ page: 'user-dashboard' }, '', window.location.href);
+           }
+       });
    </script>
 </body>
 </html>

@@ -3,118 +3,634 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner Dashboard | Arena360</title>
+    <title>Arena360 Partner Dashboard</title>
 
     <link rel="stylesheet" href="{% static 'css/style2.css' %}">
 
     <style>
-        .partner-container {
-            padding: 40px 8%;
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
         }
-        .partner-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .partner-header h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 28px;
-        }
-        .add-btn {
-            background: var(--primary-color);
-            padding: 10px 20px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .club-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-        .club-card {
-            background: white;
-            border-radius: 10px;
+
+        /* ---- Sidebar ---- */
+        .sidebar {
+            width: 230px;
+            background: #000;
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
             padding: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
-        .club-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 10px;
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: 700;
         }
-        .club-card h3 {
-            font-family: 'Montserrat', sans-serif;
-            margin-top: 12px;
+
+        .nav-item {
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: 0.2s;
         }
-        .club-actions {
-            margin-top: 15px;
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #FFD700;
+            color: black;
+        }
+
+        a.nav-item {
+            text-decoration: none;
+            display: block;
+            color: white;
+        }
+
+        a.nav-item:hover {
+            color: black;
+        }
+
+        /* ---- Main content ---- */
+        .main-content {
+            margin-left: 250px;
+            padding: 25px;
+            animation: fadeIn .4s ease-in-out;
+        }
+
+        .stats-box {
             display: flex;
-            gap: 12px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        .btn-edit {
+
+        .stat-card {
             flex: 1;
-            padding: 8px;
+            min-width: 220px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-title {
+            font-size: 15px;
+            color: #777;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        /* Button */
+        .btn-primary {
             background: black;
             color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
             border: none;
-            border-radius: 6px;
             cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            display: inline-block;
         }
-        .status {
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: bold;
+
+        .btn-primary:hover {
+            background: #FFD700;
+            color: black;
         }
-        .approved { color: green; }
-        .pending { color: orange; }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 15px;
+            color: #444;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* Charts grid responsive */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 26px;
+        }
+
+        .chart-container {
+            background: #fff;
+            padding: 18px;
+            border-radius: 12px;
+            height: 400px !important;
+            max-height: 400px !important;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chart-wrapper {
+            height: 320px !important;
+            max-height: 320px !important;
+            position: relative;
+            flex: 0 0 320px;
+            overflow: hidden;
+        }
+
+        .chart-wrapper canvas {
+            max-height: 320px !important;
+            height: 320px !important;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                height: 350px;
+            }
+            .chart-wrapper {
+                height: 280px;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
     </style>
+
 </head>
 
 <body>
 
-<div class="partner-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Welcome , {{ request.user.get_full_name|default:request.user.username|upper }}</h2>
 
-    <div class="partner-header">
-        <h2>Your Clubs</h2>
-        <button class="add-btn" onclick="window.location.href='/partner-registration/'">+ Add New Club</button>
+        <a class="nav-item active" href="{% url 'partner-dashboard' %}">📊 Dashboard</a>
+        <a class="nav-item" href="{% url 'partner-bookings' %}">📁 Club Bookings</a>
+        <a class="nav-item" href="{% url 'partner-clubs' %}">🏟 My Clubs</a>
+        <a class="nav-item" href="{% url 'partner-register' %}">➕ Add Club</a>
+        <a class="nav-item" href="{% url 'edit-profile' %}">⚙️ Profile Settings</a>
+        <a class="nav-item" href="{% url 'help-support' %}">❓ Help & Support</a>
+        <a class="nav-item" href="{% url 'logout' %}">🚪 Logout</a>
     </div>
 
-    <div class="club-grid">
 
-        {% for club in clubs %}
-        <div class="club-card">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        
+        <h1>Arena360</h1>
+        <p>Here’s a quick overview of your arena performance.</p>
+        <br><br>
 
-            {% if club.club_image %}
-                <img src="{{ club.club_image.url }}" alt="Club Image">
-            {% else %}
-                <img src="{% static 'images/placeholder.png' %}">
-            {% endif %}
+        <!-- Stats section -->
+        <div class="stats-box">
 
-            <h3>{{ club.club_name }}</h3>
-            <p>📍 {{ club.location }}</p>
-            <p>💰 ₹{{ club.price_per_hour }}/hour</p>
+            <div class="stat-card">
+                <div class="stat-title">Total Bookings</div>
+                <div class="stat-value">{{ total_bookings|default:"0" }}</div>
+            </div>
 
-            <p class="status {% if club.approved %}approved{% else %}pending{% endif %}">
-                {% if club.approved %}✔ Approved{% else %}⏳ Pending Approval{% endif %}
-            </p>
+            <div class="stat-card">
+                <div class="stat-title">Active Clubs</div>
+                <div class="stat-value">{{ total_clubs|default:"0" }}</div>
+            </div>
 
-            <div class="club-actions">
-                <button class="btn-edit" onclick="window.location.href='/edit-club/{{ club.id }}/'">Edit</button>
+            <div class="stat-card">
+                <div class="stat-title">Earnings (₹)</div>
+                <div class="stat-value">{{ total_earnings|default:"0" }}</div>
             </div>
 
         </div>
-        {% empty %}
-        <p>You have not added any clubs yet.</p>
-        {% endfor %}
 
+        <a href="{% url 'partner-register' %}" class="btn-primary">+ Add New Club</a>
+
+        <!-- My Clubs Section -->
+        <div style="margin-top:30px; background:#fff; padding:20px; border-radius:12px;">
+            <h3 style="margin-top:0; margin-bottom:20px;">My Clubs</h3>
+            {% if clubs %}
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+                    {% for club in clubs %}
+                    <div style="border:1px solid #eee; border-radius:8px; padding:15px; background:#fafafa;">
+                        {% if club.club_image %}
+                            <img src="{{ club.club_image.url }}" style="width:100%; height:150px; object-fit:cover; border-radius:6px; margin-bottom:10px;" alt="{{ club.club_name }}">
+                        {% else %}
+                            <div style="width:100%; height:150px; background:#ddd; border-radius:6px; margin-bottom:10px; display:flex; align-items:center; justify-content:center; color:#999;">
+                                No Image
+                            </div>
+                        {% endif %}
+                        <h4 style="margin:0 0 8px 0; font-size:18px;">{{ club.club_name }}</h4>
+                        <p style="margin:4px 0; color:#666; font-size:14px;">📍 {{ club.location|default:"Not specified" }}</p>
+                        <p style="margin:4px 0; color:#666; font-size:14px;">💰 ₹{{ club.price_per_hour }}/hour</p>
+                        <p style="margin:4px 0; color:#666; font-size:14px;">
+                            Status: 
+                            {% if club.approved %}
+                                <span style="color:green; font-weight:600;">✓ Approved</span>
+                            {% else %}
+                                <span style="color:orange; font-weight:600;">⏳ Pending</span>
+                            {% endif %}
+                        </p>
+                        <div style="margin-top:12px; display:flex; gap:8px;">
+                            <a href="{% url 'edit-club' club.id %}" style="flex:1; text-align:center; padding:8px; background:#000; color:white; text-decoration:none; border-radius:6px; font-size:14px;">Edit</a>
+                            <a href="{% url 'club-details' club.id %}" style="flex:1; text-align:center; padding:8px; background:#f0f0f0; color:#000; text-decoration:none; border-radius:6px; font-size:14px;">View</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color:    #999; text-align:center; padding:40px;">No clubs added yet. <a href="{% url 'partner-register' %}" style="color:#000; text-decoration:underline;">Add your first club</a></p>
+            {% endif %}
+        </div>
+
+        <!-- Summary Cards for Total Bookings and Earnings -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:26px;">
+            <div style="background:#fff; padding:20px; border-radius:12px; text-align:center; height:200px !important; max-height:200px !important;">
+                <h4 style="margin-top:0; margin-bottom:15px; color:#666; font-size:14px;">📊 Total Bookings</h4>
+                <div style="height:140px; position:relative;">
+                    <canvas id="totalBookingsChart"></canvas>
+                </div>
+            </div>
+            <div style="background:#fff; padding:20px; border-radius:12px; text-align:center; height:200px !important; max-height:200px !important;">
+                <h4 style="margin-top:0; margin-bottom:15px; color:#666; font-size:14px;">💰 Total Earnings</h4>
+                <div style="height:140px; position:relative;">
+                    <canvas id="totalEarningsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combined Analytics Chart -->
+        <div style="margin-top:26px; background:#fff; padding:20px; border-radius:12px; height:480px !important; max-height:480px !important; overflow:hidden;">
+            <h3 style="margin-top:0; margin-bottom:5px; font-size:20px;">📊 Daily Bookings & Earnings Overview</h3>
+            <p style="color:#666; font-size:13px; margin-bottom:15px;">Track your daily bookings and revenue performance side by side</p>
+            <div style="height:380px !important; max-height:380px !important; position:relative; overflow:hidden;">
+                <canvas id="combinedChart"></canvas>
+            </div>
+        </div>
+
+        <footer>© Arena360 — Partner Panel</footer>
     </div>
 
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Prevent window resize from affecting charts
+        let chartInstances = [];
+        window.addEventListener('resize', function() {
+            // Do nothing - prevent charts from resizing
+        });
+    </script>
+    <!-- Django safely outputs JSON -->
+<script id="chart-labels" type="application/json">
+    {{ chart_labels_json|default:"[]"|safe }}
+</script>
+
+<script id="chart-data" type="application/json">
+    {{ chart_data_json|default:"[]"|safe }}
+</script>
+
+<script id="revenue-labels" type="application/json">
+    {{ revenue_labels_json|default:"[]"|safe }}
+</script>
+
+<script id="revenue-data" type="application/json">
+    {{ revenue_data_json|default:"[]"|safe }}
+</script>
+
+<script id="total-bookings" type="application/json">
+    {{ total_bookings_json|default:"[0]"|safe }}
+</script>
+
+<script id="total-earnings" type="application/json">
+    {{ total_earnings_json|default:"[0]"|safe }}
+</script>
+
+<script>
+    // Parse JSON data
+    const bookingLabels = JSON.parse(document.getElementById("chart-labels").textContent);
+    const bookingData = JSON.parse(document.getElementById("chart-data").textContent);
+    const revenueLabels = JSON.parse(document.getElementById("revenue-labels").textContent);
+    const revenueData = JSON.parse(document.getElementById("revenue-data").textContent);
+    const totalBookings = JSON.parse(document.getElementById("total-bookings").textContent)[0];
+    const totalEarnings = JSON.parse(document.getElementById("total-earnings").textContent)[0];
+
+    // Total Bookings Doughnut Chart
+    const totalBookingsCtx = document.getElementById('totalBookingsChart');
+    if (totalBookings > 0) {
+        new Chart(totalBookingsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Total Bookings', ''],
+                datasets: [{
+                    data: [totalBookings, 0],
+                    backgroundColor: ['#000', 'transparent'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            },
+            plugins: [{
+                id: 'centerText',
+                beforeDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const centerX = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
+                    const centerY = chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2;
+                    ctx.save();
+                    ctx.font = 'bold 32px Poppins';
+                    ctx.fillStyle = '#000';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(totalBookings, centerX, centerY - 10);
+                    ctx.font = '14px Poppins';
+                    ctx.fillStyle = '#666';
+                    ctx.fillText('Bookings', centerX, centerY + 15);
+                    ctx.restore();
+                }
+            }]
+        });
+    } else {
+        totalBookingsCtx.parentElement.innerHTML = '<p style="color:#999; padding:40px; margin-top:20px;">No bookings yet</p>';
+    }
+
+    // Total Earnings Doughnut Chart
+    const totalEarningsCtx = document.getElementById('totalEarningsChart');
+    if (totalEarnings > 0) {
+        new Chart(totalEarningsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Total Earnings', ''],
+                datasets: [{
+                    data: [totalEarnings, Math.max(0, 10000 - totalEarnings)],
+                    backgroundColor: ['#FFD700', 'transparent'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            },
+            plugins: [{
+                id: 'centerText',
+                beforeDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const centerX = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
+                    const centerY = chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2;
+                    ctx.save();
+                    ctx.font = 'bold 28px Poppins';
+                    ctx.fillStyle = '#000';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('₹' + totalEarnings.toFixed(0), centerX, centerY - 10);
+                    ctx.font = '14px Poppins';
+                    ctx.fillStyle = '#666';
+                    ctx.fillText('Earnings', centerX, centerY + 15);
+                    ctx.restore();
+                }
+            }]
+        });
+    } else {
+        totalEarningsCtx.parentElement.innerHTML = '<p style="color:#999; padding:40px; margin-top:20px;">No earnings yet</p>';
+    }
+
+    // Create combined chart with dual Y-axes
+    const combinedCtx = document.getElementById('combinedChart');
+    let combinedChart;
+    
+    // Get all unique dates (combine from both datasets) and sort properly
+    const allDatesSet = new Set([...bookingLabels, ...revenueLabels]);
+    const allDates = Array.from(allDatesSet).sort((a, b) => {
+        // Parse ISO dates (2025-12-07) for proper sorting
+        return new Date(a) - new Date(b);
+    });
+    
+    // Format dates for display (convert ISO to readable format)
+    const formattedDates = allDates.map(dateStr => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    });
+    
+    // Map data to dates
+    const bookingMap = {};
+    bookingLabels.forEach((label, index) => {
+        bookingMap[label] = bookingData[index];
+    });
+    
+    const revenueMap = {};
+    revenueLabels.forEach((label, index) => {
+        revenueMap[label] = revenueData[index];
+    });
+    
+    // Create aligned data arrays
+    const alignedBookingData = allDates.map(date => bookingMap[date] || 0);
+    const alignedRevenueData = allDates.map(date => revenueMap[date] || 0);
+    
+    if (allDates.length > 0) {
+        combinedChart = new Chart(combinedCtx, {
+            type: 'bar',
+            data: {
+                labels: formattedDates,
+                datasets: [
+                    {
+                        label: '📅 Number of Bookings',
+                        data: alignedBookingData,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        borderColor: '#000',
+                        borderWidth: 1.5,
+                        yAxisID: 'y',
+                        order: 2
+                    },
+                    {
+                        label: '💰 Earnings (₹)',
+                        data: alignedRevenueData,
+                        backgroundColor: 'rgba(255, 215, 0, 0.8)',
+                        borderColor: '#FFD700',
+                        borderWidth: 1.5,
+                        yAxisID: 'y1',
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    title: {
+                        display: false
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: {
+                                size: 13,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    if (context.datasetIndex === 1) {
+                                        label += '₹' + context.parsed.y.toFixed(2);
+                                    } else {
+                                        label += context.parsed.y + ' booking' + (context.parsed.y !== 1 ? 's' : '');
+                                    }
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date',
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: {top: 10}
+                        },
+                        grid: {
+                            display: false
+                        },
+                        barThickness: 30,
+                        maxBarThickness: 40
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Number of Bookings',
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: {bottom: 10}
+                        },
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0,
+                            callback: function(value) {
+                                return value + ' booking' + (value !== 1 ? 's' : '');
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Earnings (₹)',
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: {bottom: 10}
+                        },
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value.toFixed(0);
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        }
+                    }
+                },
+                animation: {
+                    duration: 0
+                },
+                resizeDelay: 0,
+                onResize: null
+            }
+        });
+        chartInstances.push(combinedChart);
+    } else {
+        combinedCtx.parentElement.innerHTML = 
+            '<div style="text-align:center; color:#999; padding:60px;"><p style="font-size:16px; margin-bottom:10px;">📊 No Data Available</p><p>Start getting bookings to see your analytics here!</p></div>';
+    }
+</script>
+
+<script>
+    // Remove login page from history stack
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.history && window.history.replaceState) {
+            var referrer = document.referrer;
+            if (referrer && referrer.includes('login')) {
+                // Replace the login page entry with current dashboard
+                window.history.replaceState(null, '', window.location.href);
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

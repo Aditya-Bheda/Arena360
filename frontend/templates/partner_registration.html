@@ -10,28 +10,54 @@
   <!-- reuse global style -->
   <style>
     /* If you prefer a small page-specific CSS, paste here. Otherwise rely on style.css */
+    body {
+      background: #000;
+      color: #f0f0f0;
+      font-family: 'Poppins', sans-serif;
+    }
     .partner-wrap{
       max-width: 900px;
       margin: 40px auto;
       padding: 28px;
-      background: #fff;
+      background: #1a1a1a;
       border-radius: 10px;
-      box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 25px rgba(224, 227, 6, 0.2);
+      border: 2px solid #E0E306;
     }
     .partner-header{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
-    .partner-header h1{ font-family:'Montserrat',sans-serif; color:var(--black); margin:0; }
+    .partner-header h1{ font-family:'Montserrat',sans-serif; color:#E0E306; margin:0; }
+    .partner-header small{ color:#ccc; }
     .partner-form{ margin-top:18px; display:grid; gap:14px; grid-template-columns: 1fr 1fr; }
     .partner-form .full{ grid-column: 1 / -1; }
-    label{ font-weight:600; margin-bottom:6px; display:block; color:var(--black); }
+    label{ font-weight:600; margin-bottom:6px; display:block; color:#E0E306; }
     input[type="text"], input[type="number"], input[type="time"], input[type="file"], textarea, select {
-      width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;
+      width:100%; padding:10px; border-radius:8px; border:2px solid #444; background:#2a2a2a; color:#f0f0f0;
+    }
+    input:focus, select:focus {
+      outline:none; border-color:#E0E306; box-shadow:0 0 0 4px rgba(224, 227, 6, 0.2); background:#333;
     }
     .submit-row{ display:flex; gap:12px; justify-content:flex-end; margin-top:12px; }
-    .btn-submit{ background:var(--primary-color); color:#000; padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:700; }
-    .btn-cancel{ background:#f2f2f2; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; }
+    .btn-submit{ background:#E0E306; color:#000; padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:700; transition:all 0.3s ease; }
+    .btn-submit:hover{ background:#C9D000; transform:translateY(-2px); box-shadow:0 4px 10px rgba(224, 227, 6, 0.4); }
+    .btn-cancel{ background:#2a2a2a; color:#E0E306; border:1px solid #444; padding:8px 14px; border-radius:8px; cursor:pointer; text-decoration:none; transition:all 0.3s ease; }
+    .btn-cancel:hover{ background:#333; border-color:#E0E306; }
     .sports-list{ display:flex; gap:12px; flex-wrap:wrap; }
-    .sports-list label{ background:#fff; padding:8px 10px; border-radius:8px; border:1px solid #eee; cursor:pointer; }
-    .preview-img{ width:120px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #eee; }
+    .sports-list label{ background:#2a2a2a; padding:8px 10px; border-radius:8px; border:1px solid #444; cursor:pointer; color:#f0f0f0; }
+    .sports-list input[type="checkbox"]{ accent-color:#E0E306; }
+    .preview-img{ width:120px; height:80px; object-fit:cover; border-radius:8px; border:2px solid #444; }
+    .field-error {
+      color: #ff6b6b;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+    .field-error.show {
+      display: block;
+    }
+    input.invalid, select.invalid {
+      border-color: #ff6b6b !important;
+      box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+    }
     @media (max-width:800px){
       .partner-form { grid-template-columns: 1fr; }
       .submit-row{ justify-content:center; }
@@ -45,33 +71,40 @@
       <div><small>Owners: submit your club & wait for admin approval</small></div>
     </div>
 
-    <form class="partner-form" method="post" enctype="multipart/form-data">
+    <form class="partner-form" method="post" enctype="multipart/form-data" id="partnerForm">
       {% csrf_token %}
       <!-- Left column -->
       <div>
-        <label for="id_club_name">Club Name</label>
+        <label for="id_club_name">Club Name <span style="color:red;">*</span></label>
         {{ form.club_name }}
+        <div class="field-error" id="club_name-error" style="display: none;">Please enter club name</div>
 
-        <label for="id_location">Location</label>
+        <label for="id_location">Location <span style="color:red;">*</span></label>
         {{ form.location }}
+        <div class="field-error" id="location-error" style="display: none;">Please enter location</div>
 
-        <label for="id_available_courts">Available Courts</label>
+        <label for="id_available_courts">Available Courts <span style="color:red;">*</span></label>
         {{ form.available_courts }}
+        <div class="field-error" id="available_courts-error" style="display: none;">Please enter number of courts (minimum 1)</div>
 
-        <label for="id_price_per_hour">Price per hour (₹)</label>
+        <label for="id_price_per_hour">Price per hour (₹) <span style="color:red;">*</span></label>
         {{ form.price_per_hour }}
+        <div class="field-error" id="price_per_hour-error" style="display: none;">Please enter price (minimum ₹1)</div>
       </div>
 
       <!-- Right column -->
       <div>
-        <label for="id_contact_number">Contact Number</label>
+        <label for="id_contact_number">Contact Number <span style="color:red;">*</span></label>
         {{ form.contact_number }}
+        <div class="field-error" id="contact_number-error" style="display: none;">Please enter a valid 10-digit phone number</div>
 
-        <label for="id_open_time">Open Time</label>
+        <label for="id_open_time">Open Time <span style="color:red;">*</span></label>
         {{ form.open_time }}
+        <div class="field-error" id="open_time-error" style="display: none;">Please select open time</div>
 
-        <label for="id_close_time">Close Time</label>
+        <label for="id_close_time">Close Time <span style="color:red;">*</span></label>
         {{ form.close_time }}
+        <div class="field-error" id="close_time-error" style="display: none;">Please select close time (must be after open time)</div>
 
         <label for="id_club_image">Club Image</label>
         {{ form.club_image }}
@@ -81,10 +114,11 @@
       </div>
 
       <div class="full">
-        <label>Available Sports</label>
+        <label>Available Sports <span style="color:red;">*</span></label>
         <div class="sports-list">
           {{ form.sports }} <!-- renders checkbox list -->
         </div>
+        <div class="field-error" id="sports-error" style="display: none;">Please select at least one sport</div>
       </div>
 
       <div class="full submit-row">
@@ -106,6 +140,103 @@
       preview.src = url;
     });
   }
+  
+  // Form validation
+  document.getElementById('partnerForm').addEventListener('submit', function(e) {
+    var isValid = true;
+    var phonePattern = /^\d{10}$/;
+    
+    // Reset all errors
+    document.querySelectorAll('.field-error').forEach(function(err) {
+      err.classList.remove('show');
+    });
+    document.querySelectorAll('input, select').forEach(function(field) {
+      field.classList.remove('invalid');
+    });
+    
+    // Validate Club Name
+    var clubName = document.getElementById('id_club_name');
+    if (!clubName.value.trim()) {
+      clubName.classList.add('invalid');
+      document.getElementById('club_name-error').classList.add('show');
+      isValid = false;
+    }
+    
+    // Validate Location
+    var location = document.getElementById('id_location');
+    if (!location.value.trim()) {
+      location.classList.add('invalid');
+      document.getElementById('location-error').classList.add('show');
+      isValid = false;
+    }
+    
+    // Validate Available Courts
+    var courts = document.getElementById('id_available_courts');
+    if (!courts.value || parseInt(courts.value) < 1) {
+      courts.classList.add('invalid');
+      document.getElementById('available_courts-error').classList.add('show');
+      isValid = false;
+    }
+    
+    // Validate Price
+    var price = document.getElementById('id_price_per_hour');
+    if (!price.value || parseFloat(price.value) < 1) {
+      price.classList.add('invalid');
+      document.getElementById('price_per_hour-error').classList.add('show');
+      isValid = false;
+    }
+    
+    // Validate Contact Number
+    var contact = document.getElementById('id_contact_number');
+    if (!contact.value.trim()) {
+      contact.classList.add('invalid');
+      document.getElementById('contact_number-error').classList.add('show');
+      isValid = false;
+    } else if (!phonePattern.test(contact.value.replace(/\D/g, ''))) {
+      contact.classList.add('invalid');
+      document.getElementById('contact_number-error').classList.add('show');
+      isValid = false;
+    }
+    
+    // Validate Open Time
+    var openTime = document.getElementById('id_open_time');
+    if (!openTime.value) {
+      openTime.classList.add('invalid');
+      document.getElementById('open_time-error').classList.add('show');
+      isValid = false;
+    }
+    
+    // Validate Close Time
+    var closeTime = document.getElementById('id_close_time');
+    if (!closeTime.value) {
+      closeTime.classList.add('invalid');
+      document.getElementById('close_time-error').classList.add('show');
+      isValid = false;
+    } else if (openTime.value && closeTime.value && openTime.value >= closeTime.value) {
+      closeTime.classList.add('invalid');
+      document.getElementById('close_time-error').classList.add('show');
+      isValid = false;
+    }
+    
+    // Validate Sports
+    var sports = document.querySelectorAll('input[name="sports"]:checked');
+    if (sports.length === 0) {
+      document.getElementById('sports-error').classList.add('show');
+      isValid = false;
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+    }
+  });
+  
+  // Real-time validation
+  document.getElementById('id_contact_number').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    if (this.value.length > 10) {
+      this.value = this.value.slice(0, 10);
+    }
+  });
 </script>
 </body>
 </html>

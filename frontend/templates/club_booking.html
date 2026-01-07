@@ -3,60 +3,532 @@
 <html>
 <head>
     <title>Book Slot - {{ club.club_name }}</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
-        .box { background: white; padding: 20px; border-radius: 8px; max-width: 850px; margin: auto; }
-
-        .slots { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
-        .slot { padding: 12px; background: #fff; border-radius: 8px; width: 140px; text-align: center; border: 1px solid #ddd; }
-        .slot button { padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-
-        .available { background: #28a745; color: white; border: none; }
-        .booked { background: #ccc; color: #666; border: none; cursor: not-allowed; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            padding: 20px;
+            min-height: 100vh;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(224, 227, 6, 0.2);
+            border: 2px solid #E0E306;
+            animation: slideDown 0.8s ease;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #E0E306;
+        }
+        
+        .header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #E0E306;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header .club-name {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .filters {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            gap: 20px;
+            animation: slideUp 0.8s ease 0.2s both;
+            box-shadow: 0 4px 15px rgba(224, 227, 6, 0.1);
+            border: 1px solid #333;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #E0E306;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group select,
+        .form-group input {
+            padding: 14px 18px;
+            border: 2px solid #444;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #E0E306;
+            box-shadow: 0 0 0 4px rgba(224, 227, 6, 0.2);
+            transform: translateY(-2px);
+            background: #222;
+        }
+        
+        .info-text {
+            font-size: 13px;
+            color: #999;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        .submit-btn {
+            padding: 14px 32px;
+            background: #E0E306;
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(224, 227, 6, 0.4);
+            white-space: nowrap;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(224, 227, 6, 0.6);
+            background: #C9D000;
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .error-message {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+            padding: 18px 24px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 5px solid #c62828;
+            animation: shake 0.5s ease;
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.2);
+        }
+        
+        .field-error {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .field-error.show {
+            display: block;
+        }
+        
+        .form-group select.invalid,
+        .form-group input.invalid {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.2);
+        }
+        
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-10px);
+            }
+            75% {
+                transform: translateX(10px);
+            }
+        }
+        
+        .slots-container {
+            margin-top: 30px;
+            animation: fadeIn 0.8s ease 0.4s both;
+        }
+        
+        .slots-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+        
+        .slot-card {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: scaleIn 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slot-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #E0E306;
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .slot-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(224, 227, 6, 0.3);
+            border-color: #E0E306;
+        }
+        
+        .slot-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .slot-time {
+            font-weight: 700;
+            font-size: 16px;
+            color: #E0E306;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        
+        .slot-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slot-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .slot-btn.available {
+            background: #E0E306;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(224, 227, 6, 0.3);
+            font-weight: 700;
+        }
+        
+        .slot-btn.available:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(224, 227, 6, 0.6);
+            background: #C9D000;
+        }
+        
+        .slot-btn.available:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .slot-btn.available:active {
+            animation: pulse 0.3s ease;
+        }
+        
+        .slot-btn.booked {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            position: relative;
+            border: 1px solid #555;
+        }
+        
+        .slot-btn.booked::after {
+            content: '✕';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            opacity: 0.5;
+        }
+        
+        .no-slots {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 18px;
+            background: #2a2a2a;
+            border-radius: 16px;
+            animation: fadeIn 0.6s ease;
+            border: 1px solid #444;
+        }
+        
+        .no-slots::before {
+            content: '📅';
+            font-size: 48px;
+            display: block;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                margin: 20px;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .form-group {
+                flex: none;
+            }
+            
+            .submit-btn {
+                width: 100%;
+            }
+            
+            .slots {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+            
+            .header h2 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
-
 <body>
 
-<div class="box">
-    <h2>Booking – {{ club.club_name }}</h2>
-
-    <form method="GET" class="filters">
-        <label>Sport:</label>
-        <select name="sport" required>
-            <option value="">Select</option>
-            {% for sp in sports %}
-                <option value="{{ sp.id }}" {% if sp.id|stringformat:"s" == selected_sport_id %}selected{% endif %}>
-                    {{ sp.name }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <label>Date:</label>
-        <input type="date" name="date" value="{{ slot_date }}" required>
-
-        <button type="submit">Show Slots</button>
-    </form>
-
-    <div class="slots">
-        {% for s in availability %}
-            <div class="slot">
-                <strong>{{ s.start }} - {{ s.end }}</strong><br>
-
-                {% if s.available %}
-                    <a href="/club/{{ club.id }}/book/submit/?sport={{ selected_sport_id }}&date={{ slot_date }}&start={{ s.start }}&end={{ s.end }}">
-                      <button class="available">Book</button>
-                    </a>
-
-                {% else %}
-                    <button class="booked">Booked</button>
-                {% endif %}
-            </div>
-        {% endfor %}
+<div class="container">
+    <div class="header">
+        <h2>📅 Book Your Slot</h2>
+        <p class="club-name">{{ club.club_name }}</p>
     </div>
 
+    <form method="GET" class="filters" id="slotBookingForm">
+        <div class="form-group">
+            <label>🏆 Select Sport</label>
+            <select name="sport" id="sport-select" required>
+                <option value="">Choose a sport</option>
+                {% for sp in sports %}
+                    <option value="{{ sp.id }}" {% if sp.id|stringformat:"s" == selected_sport_id %}selected{% endif %}>
+                        {{ sp.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <div class="field-error" id="sport-error" style="display: none;">Please select a sport</div>
+        </div>
+
+        <div class="form-group">
+            <label>📆 Select Date</label>
+            <input type="date" name="date" id="date-select" value="{{ slot_date }}" min="{{ min_date }}" max="{{ max_date }}" required>
+            <span class="info-text">Available for next 30 days</span>
+            <div class="field-error" id="date-error" style="display: none;">Please select a date</div>
+        </div>
+
+        <button type="submit" class="submit-btn">🔍 Show Slots</button>
+    </form>
+
+    {% if error_message %}
+    <div class="error-message">
+        <strong>⚠️ Error:</strong> {{ error_message }}
+    </div>
+    {% endif %}
+
+    {% if availability %}
+    <div class="slots-container">
+        <h3 class="slots-title">⏰ Available Time Slots</h3>
+        <div class="slots">
+            {% for s in availability %}
+                <div class="slot-card" data-slot-index="{{ forloop.counter0 }}">
+                    <div class="slot-time">{{ s.start }} - {{ s.end }}</div>
+                    {% if s.available %}
+                        <a href="/club/{{ club.id }}/book/submit/?sport={{ selected_sport_id }}&date={{ slot_date }}&start={{ s.start }}&end={{ s.end }}" style="text-decoration: none; display: block;">
+                            <button class="slot-btn available">Book Now</button>
+                        </a>
+                    {% else %}
+                        <button class="slot-btn booked" disabled>Booked</button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% elif selected_sport_id and slot_date %}
+    <div class="no-slots">
+        <p>No available slots for the selected date.</p>
+    </div>
+    {% endif %}
+
 </div>
+
+<script>
+    // Stagger animation for slot cards
+    document.addEventListener('DOMContentLoaded', function() {
+        var slotCards = document.querySelectorAll('.slot-card[data-slot-index]');
+        slotCards.forEach(function(card) {
+            var index = parseInt(card.getAttribute('data-slot-index'));
+            var delay = (index + 1) * 0.05;
+            card.style.animationDelay = delay + 's';
+        });
+        
+        // Form validation
+        var form = document.getElementById('slotBookingForm');
+        var sportSelect = document.getElementById('sport-select');
+        var dateSelect = document.getElementById('date-select');
+        var sportError = document.getElementById('sport-error');
+        var dateError = document.getElementById('date-error');
+        
+        form.addEventListener('submit', function(e) {
+            var isValid = true;
+            
+            // Reset errors
+            sportSelect.classList.remove('invalid');
+            dateSelect.classList.remove('invalid');
+            sportError.classList.remove('show');
+            dateError.classList.remove('show');
+            
+            // Validate sport
+            if (!sportSelect.value) {
+                sportSelect.classList.add('invalid');
+                sportError.classList.add('show');
+                isValid = false;
+            }
+            
+            // Validate date
+            if (!dateSelect.value) {
+                dateSelect.classList.add('invalid');
+                dateError.classList.add('show');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+        
+        // Real-time validation
+        sportSelect.addEventListener('change', function() {
+            if (this.value) {
+                this.classList.remove('invalid');
+                sportError.classList.remove('show');
+            }
+        });
+        
+        dateSelect.addEventListener('change', function() {
+            if (this.value) {
+                this.classList.remove('invalid');
+                dateError.classList.remove('show');
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

@@ -48,3 +48,22 @@ class ProfileEditForm(forms.ModelForm):
         if commit:
             profile.save()
         return user
+
+class RegisterForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    is_partner = forms.BooleanField(required=False, label="Register as Partner")
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+            UserProfile.objects.create(
+                user=user,
+                is_partner=self.cleaned_data["is_partner"]
+            )
+        return user

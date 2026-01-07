@@ -89,7 +89,24 @@
 
 <body>
 
-<h2>My Bookings</h2>
+<h2>{% if is_partner_view %}Club Bookings{% else %}My Bookings{% endif %}</h2>
+
+{% if is_partner_view %}
+<div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+    <a href="?filter=all" style="padding:10px 20px; background:{% if filter_type == 'all' %}#E0E306{% else %}#2a2a2a{% endif %}; color:{% if filter_type == 'all' %}#000{% else %}#fff{% endif %}; text-decoration:none; border-radius:8px; font-weight:600;">
+        All Bookings
+    </a>
+    <a href="?filter=today" style="padding:10px 20px; background:{% if filter_type == 'today' %}#E0E306{% else %}#2a2a2a{% endif %}; color:{% if filter_type == 'today' %}#000{% else %}#fff{% endif %}; text-decoration:none; border-radius:8px; font-weight:600;">
+        Today
+    </a>
+    <a href="?filter=future" style="padding:10px 20px; background:{% if filter_type == 'future' %}#E0E306{% else %}#2a2a2a{% endif %}; color:{% if filter_type == 'future' %}#000{% else %}#fff{% endif %}; text-decoration:none; border-radius:8px; font-weight:600;">
+        Upcoming
+    </a>
+    <a href="?filter=past" style="padding:10px 20px; background:{% if filter_type == 'past' %}#E0E306{% else %}#2a2a2a{% endif %}; color:{% if filter_type == 'past' %}#000{% else %}#fff{% endif %}; text-decoration:none; border-radius:8px; font-weight:600;">
+        Past
+    </a>
+</div>
+{% endif %}
 
 {% for b in bookings %}
 <div class="booking-card">
@@ -108,7 +125,12 @@
         <div class="detail">📍 Location: {{ b.club.location }}</div>
         <div class="detail">📅 Date: {{ b.date }}</div>
         <div class="detail">⏰ Time: {{ b.start_time }} - {{ b.end_time }}</div>
+        {% if is_partner_view %}
+        <div class="detail">👤 Customer: {{ b.name }} | 📞 {{ b.phone }}</div>
+        <div class="detail">👤 Booked by: {{ b.user.username }}</div>
+        {% else %}
         <div class="detail">👤 Name: {{ b.name }} | 📞 {{ b.phone }}</div>
+        {% endif %}
         <div class="detail">💰 ₹{{ b.club.price_per_hour }}/hr</div>
     </div>
 </div>

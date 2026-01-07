@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment - Arena360</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        .info-box {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .info-box p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #FFD700;
+            border-radius: 10px;
+        }
+        #razorpay-button {
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #razorpay-button:hover {
+            background: #333;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Complete Your Payment</h2>
+
+    <!-- Booking Summary -->
+    <div class="info-box">
+        <p><strong>Club:</strong> {{ booking.club.club_name }}</p>
+        <p><strong>Sport:</strong> {{ booking.sport.name }}</p>
+        <p><strong>Date:</strong> {{ booking.date }}</p>
+        <p><strong>Time:</strong> {{ booking.start_time }} - {{ booking.end_time }}</p>
+    </div>
+
+    <div class="amount">
+        Total Amount: ₹{{ amount|floatformat:2 }}
+    </div>
+
+    <button id="razorpay-button">Pay Now</button>
+    <div class="loading" id="loading">Processing payment...</div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "{{ razorpay_key_id }}",
+        "amount": {{ amount_in_paise }}, // Amount in paise
+        "currency": "INR",
+        "name": "Arena360",
+        "description": "Booking Payment",
+        "order_id": "{{ razorpay_order_id }}",
+        "handler": function (response) {
+            // Payment successful - send to callback
+            document.getElementById('loading').style.display = 'block';
+            
+            // Create form to submit payment details
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "payment-callback" %}';
+            
+            // Get CSRF token
+            var csrftoken = getCookie('csrftoken');
+            var csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrftoken;
+            form.appendChild(csrfInput);
+            
+            // Add payment details
+            var fields = {
+                'razorpay_payment_id': response.razorpay_payment_id,
+                'razorpay_order_id': response.razorpay_order_id,
+                'razorpay_signature': response.razorpay_signature,
+                'booking_id': '{{ booking.id }}'
+            };
+            
+            for (var key in fields) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "prefill": {
+            "name": "{{ booking.name }}",
+            "contact": "{{ booking.phone }}",
+            "email": "{{ request.user.email }}"
+        },
+        "theme": {
+            "color": "#000000"
+        },
+        "modal": {
+            "ondismiss": function(){
+                window.location.href = "{% url 'club-booking' booking.club.id %}";
+            }
+        }
+    };
+    
+    var rzp = new Razorpay(options);
+    
+    document.getElementById('razorpay-button').onclick = function(e){
+        e.preventDefault();
+        document.getElementById('loading').style.display = 'block';
+        rzp.open();
+    };
+    
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+</body>
+</html>
+
